@@ -1,12 +1,17 @@
 {
   "name": "ol-load-geopackage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Loads OGC GeoPackage vector data into OpenLayers Vector Sources",
   "main": "dist/ol-load-geopackage.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["OGC", "GeoPackage", "OpenLayers", "ol"],
+  "keywords": [
+    "OGC",
+    "GeoPackage",
+    "OpenLayers",
+    "ol"
+  ],
   "author": "Richard Thomas",
   "license": "ISC",
   "dependencies": {
