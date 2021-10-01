@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>ol-load-geopackage basic example</title>
+        <style>
+            #map {
+                width: 100%;
+                height: 500px;
+                border: solid 1px grey;
+            }
+          </style>
+    </head>
+    <body>
+        <h4>ol-load-geopackage: basic example</h4>
+        <div id="map">
+        </div>
+        <div id="report"></div>
+        <h4>Acknowledgements</h4>
+        <p>Data: Made with Natural Earth. Free vector and raster map data @
+            <a href="https://www.naturalearthdata.com/" target="_blank">naturalearthdata.com</a>.
+        </p>
+        <script>
+            // URL of OGC GeoPackage to load
+            const gpkgFile = 'Natural_Earth_QGIS_layers_and_styles.gpkg';
+
+            // Initial map view [xmin, ymin, xmax, ymax]
+            const initialMapExtent = [-20000000, 3000000, 20000000, 12000000];
+        </script>
+        <script src="basic_example_bundle.js"></script>
+    </body>
+</html>
