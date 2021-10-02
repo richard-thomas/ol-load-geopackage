@@ -1,5 +1,7 @@
 # OpenLayers OGC GeoPackage Loader
 
+[![npm](https://img.shields.io/npm/v/ol-load-geopackage)](https://www.npmjs.com/package/ol-load-geopackage)
+
 A JavaScript module to load OGC GeoPackage vector data tables into OpenLayers Vector Sources, transforming the data (if necessary) to match the specified display projection. This was primarily designed to directly load data exported by the QGIS [Package Layers](https://docs.qgis.org/3.16/en/docs/user_manual/processing_algs/qgis/database.html#package-layers) Processing Toolbox operation. As such, it will also (if it exists) load the associated "layer_styles" table of SLD XML styling data exported by QGIS in the same GeoPackage.
 
 It is implemented as an NPM module and is a lightweight wrapper around the [sql.js](https://github.com/sql-js/sql.js) SQLite JavaScript library.
