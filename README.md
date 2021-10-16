@@ -65,6 +65,8 @@ The (shared) support files used to bundle the examples using Webpack 5 ([package
 
 ```bash
 cd examples
+npm install
+npm run-script sql-install
 npm run-script build
 ```
 
@@ -109,8 +111,8 @@ Notes:
 
 ## Contributions
 
-For bug reports, enhancement requests or code contributions please see [CONTRIBUTING](CONTRIBUTING.MD).
+For bug reports, enhancement requests or code contributions please see [CONTRIBUTING](CONTRIBUTING.md).
 
 ## Licence
 
-ISC - see [LICENCE](LICENCE.MD).
+ISC - see [LICENCE](LICENCE.md).

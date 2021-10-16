@@ -10,12 +10,14 @@
     "OGC",
     "GeoPackage",
     "OpenLayers",
-    "ol"
+    "ol",
+    "QGIS",
+    "SLD"
   ],
   "author": "Richard Thomas",
   "license": "ISC",
   "dependencies": {
-    "ol": ">=6.7.0",
+    "ol": "^6.7.0",
     "sql.js": "^1.6.1",
     "util": "^0.12.4"
   },

@@ -1,7 +1,7 @@
 {
   "name": "ol-load-geopackage-examples",
   "version": "1.0.0",
-  "description": "Examples to demonstrate ol-load-geopackage",
+  "description": "Examples to demonstrate ol-load-geopackage NPM module",
   "private": true,
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "watch": "webpack --watch",
     "start-basic": "webpack serve --open basic_example.html --config-name basic",
     "start-proj4": "webpack serve --open proj4_example.html --config-name proj4",
-    "build": "webpack"
+    "build": "webpack",
+    "sql-install": "cp node_modules/sql.js/dist/sql-wasm.wasm dist"
   },
   "author": "Richard Thomas",
   "license": "ISC",
@@ -24,7 +25,7 @@
     "webpack-dev-server": "^4.1.0"
   },
   "dependencies": {
-    "ol": ">=6.7.0",
+    "ol": "^6.7.0",
     "ol-load-geopackage": ">=1.0.0",
     "proj4": "^2.7.5"
   }
