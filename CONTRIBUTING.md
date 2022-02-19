@@ -1,7 +1,7 @@
 
 # Contributing
 
-At the moment, this is the first part of several different (but related) bits of code being released. Bug reports or suggested documentation updates are very welcome - please raise an issue (see below). However, please hold off from adding pull requests for the moment as the wider context for testing is not publicly visible.
+Bug reports or suggested documentation updates are very welcome - please raise an issue (see below).
 
 Enhancement requests are also welcome, but please bear in mind that this package is intended to be as lightweight as possible - for more fully fledged handling of OGC GeoPackages you might want to consider the [NGA GeoPackage Libraries](https://github.com/ngageoint/GeoPackage#geopackage).
 
