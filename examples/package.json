@@ -25,7 +25,7 @@
     "webpack-dev-server": "^4.1.0"
   },
   "dependencies": {
-    "ol": "^6.7.0",
+    "ol": ">=6.7.0",
     "ol-load-geopackage": ">=1.0.0",
     "proj4": "^2.7.5"
   }
