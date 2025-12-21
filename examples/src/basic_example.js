@@ -20,7 +20,7 @@ import ol_Map from 'ol/Map';
 import ol_View from 'ol/View';
 import ol_layer_Vector from 'ol/layer/Vector';
 import ol_layer_Tile from 'ol/layer/Tile';
-import ol_source_Stamen from 'ol/source/Stamen';
+import ol_source_StadiaMaps from 'ol/source/StadiaMaps';
 
 // Map View Projection
 const displayProjection = 'EPSG:3857';
@@ -46,7 +46,7 @@ var map = new ol_Map({
     target: 'map',
     layers: [
         new ol_layer_Tile({
-          source: new ol_source_Stamen({ layer: 'toner-lite' })
+            source: new ol_source_StadiaMaps({ layer: 'stamen_toner_lite' })
         }),
       ],
     view: new ol_View({

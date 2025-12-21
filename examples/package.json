@@ -1,6 +1,6 @@
 {
   "name": "ol-load-geopackage-examples",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Examples to demonstrate ol-load-geopackage NPM module",
   "private": true,
   "main": "index.js",
@@ -15,17 +15,14 @@
   "author": "Richard Thomas",
   "license": "ISC",
   "devDependencies": {
-    "crypto-browserify": "^3.12.0",
-    "css-loader": "^6.2.0",
-    "path-browserify": "^1.0.1",
-    "stream-browserify": "^3.0.0",
-    "style-loader": "^3.2.1",
-    "webpack": "^5.52.0",
-    "webpack-cli": ">=4.8.0",
-    "webpack-dev-server": "^4.1.0"
+    "css-loader": "^7.1.2",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
   },
   "dependencies": {
-    "ol": ">=6.7.0",
+    "ol": ">=8.2.0",
     "ol-load-geopackage": ">=1.0.0",
     "proj4": "^2.7.5"
   }
