@@ -8,20 +8,45 @@
  */
 
 import initSqlJs from "sql.js";
-import {get as ol_proj_get} from 'ol/proj';
-import ol_source_Vector from 'ol/source/Vector';
-import ol_format_WKB from 'ol/format/WKB';
+import {get as ol_proj_get} from 'ol/proj.js';
+import ol_source_Vector from 'ol/source/Vector.js';
+import ol_format_WKB from 'ol/format/WKB.js';
 
-// For reading OGC GeoPackage files, use the sql.js SQLite reader;
-// initSqlJs() will load the sql-wasm.wasm file from the current directory
-const promiseSqlWasmLoaded = initSqlJs();
-promiseSqlWasmLoaded
-    .catch(error => {
-        console.error("Error loading SQLite JS wasm binary: " + error);
-        throw error;
-    });
+// Extract sql.js version (to enable use of CDN for loading associated WASM)
+import sqlJsPkg from 'sql.js/package.json' with { type: 'json' };
+const sql_js_version = sqlJsPkg.version;
+
+/**
+ * Whether sql.js WASM file has been (successfully) loaded yet
+ */
+var promiseSqlWasmLoaded;
 
 // -------- Public Functions --------
+export { initSqlJsWasm, loadGpkg, sql_js_version };
+
+/**
+ * Initialisation: start asynchronous loading of WASM file required by sql.js
+ * @param {string} sqlJsWasmDir - URL of folder containing sql-wasm.wasm file to load for sql.js
+ */
+function initSqlJsWasm(sqlJsWasmDir) {
+    // If the WASM file location isn't specified look for it in the root folder
+    if (sqlJsWasmDir === undefined) {
+        sqlJsWasmDir = "";
+    }
+
+    // For reading OGC GeoPackage files, use the sql.js SQLite reader;
+    // initSqlJs() will load the sql-wasm.wasm file from the specified location
+    promiseSqlWasmLoaded = initSqlJs({
+        locateFile: file => `${sqlJsWasmDir}/${file}`
+    });
+    promiseSqlWasmLoaded
+        .catch(error => {
+            // Only need report error here - any later calls to loadGpkg() will throw error
+            console.error(`initSqlJsWasm() unable to load SQLite JS binary (sql-wasm.wasm) from folder:\n` +
+                `${sqlJsWasmDir}/\n` +
+                `[sql.js error message]: ${error}`);
+        });
+}
 
 /**
  * Wrapper to load a single OGC GeoPackage
@@ -31,9 +56,10 @@ promiseSqlWasmLoaded
  *   data tables (OpenLayers vector sources, indexed by table name),
  *   styles (SLD layer_styles XML strings, indexed by layer name)
  */
-export default function (gpkgFile, displayProjection) {
+function loadGpkg(gpkgFile, displayProjection) {
+
     // Start OGC GeoPackage load and processing to extract data/SLDs
-    var gpkgPromise = loadGpkg(gpkgFile);
+    var gpkgReadPromise = readRawGpkg(gpkgFile);
 
     // Check if we have a definition for the display projection (SRS)
     if (!ol_proj_get(displayProjection)) {
@@ -42,21 +68,29 @@ export default function (gpkgFile, displayProjection) {
             '] - can be added beforehand with ol/proj/proj4');
     }
 
-    // When SQLite and this OGC GeoPackage loaded, extract data/SLDs
-    return Promise.all([promiseSqlWasmLoaded, gpkgPromise])
-        .then(([sqlWasm, gpkgArrayBuffer]) => processGpkgData(gpkgFile,
-            gpkgArrayBuffer, sqlWasm, displayProjection))
-        .catch(error => { throw error; });
+    return Promise.allSettled([promiseSqlWasmLoaded, gpkgReadPromise])
+        .then((results) => {
+            if (results[0].status === 'rejected') {
+                throw new Error('Unable to load SQLite JS binary (sql-wasm.wasm)');
+            }
+            if (results[1].status === 'rejected') {
+                throw new Error(`Unable to read raw GeoPackage data from file: ${gpkgFile}`);
+            }
+            const sqlWasm = results[0].value;
+            const gpkgArrayBuffer = results[1].value;
+            return processGpkgData(gpkgFile, gpkgArrayBuffer, sqlWasm, displayProjection);
+        }
+    );
 }
 
 // -------- Private Functions --------
 
 /**
- * Load a single OGC GeoPackage
+ * Read raw data from source for a single OGC GeoPackage
  * @param {string} gpkgFile - OGC GeoPackage file path
  * @returns {Promise} Promise with Gpkg contents in ArrayBuffer format
  */
-function loadGpkg(gpkgFile) {
+function readRawGpkg(gpkgFile) {
     return new Promise(function(succeed, fail) {
         var oReq = new XMLHttpRequest();
         oReq.responseType = "arraybuffer";
@@ -191,7 +225,7 @@ function processGpkgData(loadedGpkgFile, gpkgArrayBuffer, sqlWasm,
             vectorSource.addFeatures(features);
         }
 
-        // For information only, save details of  original projection (SRS)
+        // For information only, save details of original projection (SRS)
         vectorSource.setProperties({"origProjection": tableDataProjection});
         dataFromGpkg[table_name] = vectorSource;
     }

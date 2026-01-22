@@ -1,11 +1,17 @@
 {
   "name": "ol-load-geopackage",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Loads OGC GeoPackage vector data tables into OpenLayers Vector Sources",
-  "main": "dist/ol-load-geopackage.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "files": [
+    "dist/",
+    "CONTRIBUTING.md",
+    "API.md"
+  ],
+  "exports": {
+    ".": "./dist/ol-load-geopackage.js",
+    "./package.json": "./package.json"
   },
+  "type": "module",
   "keywords": [
     "OGC",
     "GeoPackage",
@@ -25,5 +31,12 @@
     "type": "git",
     "url": "git+https://github.com/richard-thomas/ol-load-geopackage.git"
   },
-  "homepage": "https://github.com/richard-thomas/ol-load-geopackage#readme"
+  "homepage": "https://github.com/richard-thomas/ol-load-geopackage#readme",
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
+    "@stylistic/eslint-plugin": "^5.7.0",
+    "eslint": "^9.39.2",
+    "globals": "^17.0.0"
+  }
 }
