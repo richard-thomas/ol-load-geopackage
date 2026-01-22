@@ -1,11 +1,10 @@
 {
   "name": "ol-load-geopackage-examples",
-  "version": "1.0.1",
-  "description": "Examples to demonstrate ol-load-geopackage NPM module",
+  "version": "2.0.0",
+  "description": "Examples to demonstrate ol-load-geopackage NPM module with Webpack",
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch",
     "start-basic": "webpack serve --open basic_example.html --config-name basic",
     "start-proj4": "webpack serve --open proj4_example.html --config-name proj4",
@@ -23,7 +22,7 @@
   },
   "dependencies": {
     "ol": ">=8.2.0",
-    "ol-load-geopackage": ">=1.0.0",
+    "ol-load-geopackage": "^2.0.0",
     "proj4": "^2.7.5"
   }
 }

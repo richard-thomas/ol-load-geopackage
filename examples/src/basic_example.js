@@ -10,25 +10,27 @@
 
 import 'ol/ol.css';
 
-// Module to import OGC GeoPackages
-// (import early to start async loading of required sql.js Web Assembly code)
-import loadGpkg from 'ol-load-geopackage';
+// OpenLayers 8.2+ modules
+import {get as ol_proj_get} from 'ol/proj.js';
+import ol_Map from 'ol/Map.js';
+import ol_View from 'ol/View.js';
+import ol_layer_Vector from 'ol/layer/Vector.js';
+import ol_layer_Tile from 'ol/layer/Tile.js';
+import ol_source_StadiaMaps from 'ol/source/StadiaMaps.js';
 
-// OpenLayers 6 modules
-import {get as ol_proj_get} from 'ol/proj';
-import ol_Map from 'ol/Map';
-import ol_View from 'ol/View';
-import ol_layer_Vector from 'ol/layer/Vector';
-import ol_layer_Tile from 'ol/layer/Tile';
-import ol_source_StadiaMaps from 'ol/source/StadiaMaps';
+// Module to import OGC GeoPackages
+import { initSqlJsWasm, loadGpkg } from 'ol-load-geopackage';
+
+// Start loading of sql.js Web Assembly (WASM) from root folder
+initSqlJsWasm();
 
 // Map View Projection
 const displayProjection = 'EPSG:3857';
 
 // Check if we need to add Proj4s definition for requested display projection
 if (!ol_proj_get(displayProjection)) {
-    alert("Missing requested display projection [" +
-        displayProjection + "] - this can be added with proj4.defs");
+    alert('Missing requested display projection [' +
+        displayProjection + '] - this can be added with proj4.defs');
 }
 
 const outputElem = document.getElementById('report');
@@ -74,7 +76,7 @@ gpkgPromise
             }));
         }
     })
-    .catch(error => alert('ol-load-geopackage error: ' + error));
+    .catch(error => alert('ol-load-geopackage loadGpkg() error:\n' + error));
 
 // Display (in browser console) details of all tables in GeoPackage
 function displayGpkgContents(dataFromGpkg, sldsFromGpkg) {

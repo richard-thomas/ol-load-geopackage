@@ -11,26 +11,30 @@
 import 'ol/ol.css';
 
 // Module to import OGC GeoPackages
-// (import early to start async loading of required sql.js Web Assembly code)
-import loadGpkg from 'ol-load-geopackage';
+import { initSqlJsWasm, loadGpkg , sql_js_version} from 'ol-load-geopackage';
+
+// Start loading of sql.js Web Assembly (WASM) from CDN folder.
+// (CDN version specified needs to match sql.js module imported by ol-load-geopackage)
+const sqlJsWasmDir = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/' + sql_js_version;
+initSqlJsWasm(sqlJsWasmDir);
 
 // Use Proj4js (if additional coordinate projections required in OpenLayers)
 import proj4 from 'proj4';
-import {register as ol_proj_proj4_register} from 'ol/proj/proj4';
+import {register as ol_proj_proj4_register} from 'ol/proj/proj4.js';
 
-// OpenLayers 6 modules
-import ol_Map from 'ol/Map';
-import ol_View from 'ol/View';
-import ol_layer_Vector from 'ol/layer/Vector';
-import ol_layer_Tile from 'ol/layer/Tile';
-import ol_source_StadiaMaps from 'ol/source/StadiaMaps';
+// OpenLayers 8.2+ modules
+import ol_Map from 'ol/Map.js';
+import ol_View from 'ol/View.js';
+import ol_layer_Vector from 'ol/layer/Vector.js';
+import ol_layer_Tile from 'ol/layer/Tile.js';
+import ol_source_StadiaMaps from 'ol/source/StadiaMaps.js';
 
 // Map View Projection (SRS)
 const displayProjection = 'EPSG:27700';
 
 // Use Proj4js to define EPSG:27700 Projection (British National Grid)
 // (parameters from https://epsg.io/27700)
-proj4.defs("EPSG:27700","+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs");
+proj4.defs('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs');
 
 // Make non-built-in projections defined in proj4 available in OpenLayers.
 // (must be done before GeoPackages are loaded)
@@ -39,6 +43,8 @@ ol_proj_proj4_register(proj4);
 const outputElem = document.getElementById('report');
 
 outputElem.innerHTML +=
+    '<p>Loading required sql.js binary (WASM) from external Content ' +
+    'Delivery Network (CDN) folder (' + sqlJsWasmDir + ').</p>' +
     '<p>Loading OGC GeoPackage file (' + gpkgFile +
     ') and reprojecting sources (to ' + displayProjection + ')...</p>';
 
