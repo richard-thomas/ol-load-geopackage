@@ -99,13 +99,13 @@ npm install
 npm run-script sql-install
 npm run-script build
 ```
-You can then test the output code placed in the dist folder in a web browser at URL [http://localhost:8000/](http://localhost:8000/) using Vite's built in HTTP server with:
+Although you can then test the output code placed in the dist folder using the python HTTP server method (as in the Webpack example), it is easier to use Vite's built in HTTP server with:
 
 ```bash
 npm run-script preview
 ```
 
-The Vite dev-server can be used to automatically re-build, act as a webhost and trigger the browser to reload every time the code changes. The following script commands (defined in [package.json](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/package.json)) will start the dev-server at a top level _index.html_ file which has links to the 2 examples:
+The Vite dev server can be used to automatically re-build, act as a webhost and trigger the browser to reload every time the code changes. The following script commands (defined in [package.json](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/package.json)) will start the dev server at a top level _index.html_ file which has links to the 2 examples:
 
 ```bash
 npm run-script dev
@@ -115,9 +115,9 @@ npm run-script dev
 
 The JavaScript module has 3 exported functions/constants which are described in the separate [API Specification](API.md):
 
-- [initSqlJsWasm()](#initsqljswasmsqljswasmdir) - Initialisation: start loading of required sql.js WASM file
-- [loadGpkg()](#loadgpkggpkgfile-displayprojection) - start loading and data extraction of GeoPackage
-- [sql_js_version](#sql_js_version) - NPM version number of  underlying sql.js module
+- [initSqlJsWasm()](API.md#initsqljswasmsqljswasmdir) - Initialisation: start loading of required sql.js WASM file
+- [loadGpkg()](API.md#loadgpkggpkgfile-displayprojection) - start loading and data extraction of GeoPackage
+- [sql_js_version](API.md#sql_js_version) - NPM version number of  underlying sql.js module
 
 ## Migrating from ol-load-geopackage v1.x.x
 
@@ -126,7 +126,7 @@ In v1.x.x the sql.js WASM file (sql-wasm.wasm) was implicitly loaded from the cu
 ```javascript
 import loadGpkg from 'ol-load-geopackage';
 ```
-From v2.0.0 the WASM must be explicitly loaded by invoking the new [initSqlJsWasm()](#initsqljswasmsqljswasmdir) function, with the sql-wasm.wasm file placed in the root folder if not specified as a parameter:
+From v2.0.0 the WASM must be explicitly loaded by invoking the new [initSqlJsWasm()](API.md#initsqljswasmsqljswasmdir) function, with the sql-wasm.wasm file placed in the root folder if not specified as a parameter:
 
 ```javascript
 import { initSqlJsWasm, loadGpkg } from 'ol-load-geopackage';
