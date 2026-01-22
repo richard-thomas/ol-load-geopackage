@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>ol-load-geopackage examples (Vite)</title>
+    </head>
+    <body>
+        <h4>ol-load-geopackage examples (Vite build)</h4>
+        <p>Each example is presented as HTML/JavaScript source code and a
+            directly viewable web page (with production-optimized JavaScript
+            built using Vite).</p>
+        <ul>
+            <li>Basic Example: <a href="basic_example.html">web page</a>
+                (sources: <a href="https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/basic_example.html">HTML</a>,
+                <a href="https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/src/basic_example.js">JavaScript</a>)</li>
+            <p>Loads vector tables and associated QGIS "layer_styles" SLD XML
+                strings from an OGC GeoPackage and render all tables as layers
+                on an OpenLayers map. Displays details of package contents.</p>
+            <li>Proj4 Example: <a href="proj4_example.html">web page</a>
+            (sources: <a href="https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/proj4_example.html">HTML</a>,
+            <a href="https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/src/proj4_example.js">JavaScript</a>)</li>
+            <p>Used in conjunction with Proj4js module to enable additional
+                projections to those built in to OpenLayers. These other
+                projections can be for the input source data and/or the output
+                display projection. Also demonstrates loading required sql.js
+                WASM from an external Content Delivery Network (CDN) site.</p>
+        </ul>
+        <p>GitHub source:
+            <a href="https://github.com/richard-thomas/ol-load-geopackage#readme">ol-load-geopackage</a>.
+        </p>
+        <p>You can try the examples with your own GeoPackage data (without
+            having to install Node.js or Vite) by cloning the GitHub
+            repository then editing the "gpkgFile" definition in the HTML files.
+            In order to ensure all the files are able to load you will have to
+            host them with a (simple) local HTTP server, for example by running
+            in the examples-vite/dist folder...
+        </p>
+        <p>python -m http.server <i>(Windows)</i></p>
+        <p>python3 -m http.server <i>(macOS/Linux)</i></p>
+        <p>... which will allow you to view them in a browser at
+            http://localhost:8000/.
+            Note however that if your source data uses projections (SRS) other
+            than the few built in to OpenLayers, then you would need to modify
+            the .js source files (as in the Proj4 example) to add more SRS and
+            rebuild the .js bundles.
+        </p>
+  </body>
+</html>
