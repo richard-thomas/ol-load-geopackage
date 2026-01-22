@@ -10,11 +10,11 @@ The current version was tested with OpenLayers 10.7, but should work with OpenLa
 
 Each example (in the [GitHub repository](https://github.com/richard-thomas/ol-load-geopackage)) is presented as HTML/JavaScript source code and as directly viewable web pages (built using both [Vite](https://vite.dev/) and the [Webpack](https://webpack.js.org/) module bundler).
 
-- Basic Example: web page: [Vite](https://richard-thomas.github.io/ol-load-geopackage/examples-vite/basic_example.html), [Webpack](https://richard-thomas.github.io/ol-load-geopackage/examples/dist/basic_example.html) (sources: [Vite HTML](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/basic_example.html), [Webpack HTML](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples/dist/basic_example.html),
+- Basic Example: web page: [Vite](https://richard-thomas.github.io/ol-load-geopackage/examples-vite/dist/basic_example.html), [Webpack](https://richard-thomas.github.io/ol-load-geopackage/examples/dist/basic_example.html) (sources: [Vite HTML](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/basic_example.html), [Webpack HTML](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples/dist/basic_example.html),
 [JavaScript (common)](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples/src/basic_example.js))
   - Loads vector tables and associated QGIS "layer_styles" SLD XML strings from an OGC GeoPackage and render all tables as layers on an OpenLayers map. Displays details of package contents.
 
-- Proj4 Example: web page: [Vite](https://richard-thomas.github.io/ol-load-geopackage/examples-vite/proj4_example.html), [Webpack](https://richard-thomas.github.io/ol-load-geopackage/examples/dist/proj4_example.html) (sources: [Vite HTML](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/proj4_example.html), [Webpack HTML](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples/dist/proj4_example.html),
+- Proj4 Example: web page: [Vite](https://richard-thomas.github.io/ol-load-geopackage/examples-vite/dist/proj4_example.html), [Webpack](https://richard-thomas.github.io/ol-load-geopackage/examples/dist/proj4_example.html) (sources: [Vite HTML](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/proj4_example.html), [Webpack HTML](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples/dist/proj4_example.html),
 [JavaScript (common)](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples/src/proj4_example.js))
   - Used in conjunction with Proj4js module to enable additional projections to those built in to OpenLayers. These other projections can be for the input source data and/or the output display projection. Also demonstrates loading required sql.js WebAssembly binary (WASM) from an external Content Delivery Network (CDN) site.
 
@@ -46,7 +46,7 @@ This package must be imported as a module - it is not designed to be loaded dire
 ```javascript
 import { initSqlJsWasm, loadGpkg } from 'ol-load-geopackage';
 
-initSqlJsWasm();
+initSqlJsWasm('.');
 var gpkgPromise = loadGpkg(<gpkgFile>, <displayProjection>);
 gpkgPromise
     .then(([dataFromGpkg, sldsFromGpkg]) => {
@@ -62,7 +62,7 @@ gpkgPromise
     .catch(error => alert('ol-load-geopackage error: ' + error));
 ```
 
-Note that the _initSqlJsWasm()_ statement will start the asynchronous loading of the required sql.js WebAssembly binary file sql-wasm.wasm (from the root folder if no path specified), so is best placed early in the code.
+Note that the _initSqlJsWasm()_ statement will start the asynchronous loading of the required sql.js WebAssembly binary file sql-wasm.wasm (from the current folder in this case), so is best placed early in the code.
 
 ### Building with Webpack
 
@@ -126,11 +126,11 @@ In v1.x.x the sql.js WASM file (sql-wasm.wasm) was implicitly loaded from the cu
 ```javascript
 import loadGpkg from 'ol-load-geopackage';
 ```
-From v2.0.0 the WASM must be explicitly loaded by invoking the new [initSqlJsWasm()](API.md#initsqljswasmsqljswasmdir) function, with the sql-wasm.wasm file placed in the root folder if not specified as a parameter:
+From v2.0.0 the WASM must be explicitly loaded by invoking the new [initSqlJsWasm()](API.md#initsqljswasmsqljswasmdir) function, with the sql-wasm.wasm file placed in the root folder if not specified as a parameter. In this example, it is placed in the current folder to mimic v1.x.x behaviour:
 
 ```javascript
 import { initSqlJsWasm, loadGpkg } from 'ol-load-geopackage';
-initSqlJsWasm();
+initSqlJsWasm('.');
 ```
 
 ## Contributions

@@ -21,8 +21,8 @@ import ol_source_StadiaMaps from 'ol/source/StadiaMaps.js';
 // Module to import OGC GeoPackages
 import { initSqlJsWasm, loadGpkg } from 'ol-load-geopackage';
 
-// Start loading of sql.js Web Assembly (WASM) from root folder
-initSqlJsWasm();
+// Start loading of sql.js Web Assembly (WASM) from current folder
+initSqlJsWasm('.');
 
 // Map View Projection
 const displayProjection = 'EPSG:3857';
