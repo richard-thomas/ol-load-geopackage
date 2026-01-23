@@ -27,4 +27,7 @@ export default defineConfig({
   },
   // mpa allows vite server to return 404 instead of fallback to index.html
   appType: 'mpa',
+
+  // Make project root relative to dist folder (allows simple deployment)
+  base: './',
 });
