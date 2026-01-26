@@ -50,7 +50,12 @@ outputElem.innerHTML +=
 
 // Kick off the loading of the OGC GeoPackage
 var startProcessing = Date.now();
-var gpkgPromise = loadGpkg(gpkgFile, displayProjection);
+var gpkgPromise;
+try {
+    gpkgPromise = loadGpkg(gpkgFile, displayProjection);
+} catch (error) {
+    alert('loadGpkg() failed before Promise set-up:\n' + error);
+}
 
 // Create Map canvas and View
 var map = new ol_Map({
