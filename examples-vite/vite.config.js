@@ -15,6 +15,8 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html')
       },
     },
+    // Generates separate .map files for each bundled JS file
+    sourcemap: true,
   },
   resolve: {
     alias: {
