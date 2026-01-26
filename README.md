@@ -37,7 +37,7 @@ Use Node.js to install the NPM package: [ol-load-geopackage](https://www.npmjs.c
 npm install --save ol-load-geopackage
 ```
 
-After running npm install, the sql.js WebAssembly file (sql-wasm.wasm) will need to be copied from folder _node_modules/sql.js/dist/_ to a folder where the web page can load it from.
+After running npm install, the sql.js WebAssembly file (sql-wasm.wasm) will need to be copied from folder _node_modules/sql.js/dist/_ to a folder where the web page can load it from (unless you plan to load it from a CDN).
 
 ## Basic usage
 
@@ -47,7 +47,12 @@ This package must be imported as a module - it is not designed to be loaded dire
 import { initSqlJsWasm, loadGpkg } from 'ol-load-geopackage';
 
 initSqlJsWasm('.');
-var gpkgPromise = loadGpkg(<gpkgFile>, <displayProjection>);
+var gpkgPromise;
+try {
+    gpkgPromise = loadGpkg(<gpkgFile>, <displayProjection>);
+} catch (error) {
+    alert('loadGpkg() failed before Promise set-up:\n' + error);
+}
 gpkgPromise
     .then(([dataFromGpkg, sldsFromGpkg]) => {
         for (var table in dataFromGpkg) {
@@ -59,7 +64,7 @@ gpkgPromise
             //   sldsFromGpkg[layerName]
         }
     })
-    .catch(error => alert('ol-load-geopackage error: ' + error));
+    .catch(error => alert('ol-load-geopackage error:\n' + error));
 ```
 
 Note that the _initSqlJsWasm()_ statement will start the asynchronous loading of the required sql.js WebAssembly binary file sql-wasm.wasm (from the current folder in this case), so is best placed early in the code.

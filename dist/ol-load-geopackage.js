@@ -7,7 +7,7 @@
  *  Both Sources and SLDs are returned in objects with table names used as keys.
  */
 
-import initSqlJs from "sql.js";
+import initSqlJs from 'sql.js';
 import {get as ol_proj_get} from 'ol/proj.js';
 import ol_source_Vector from 'ol/source/Vector.js';
 import ol_format_WKB from 'ol/format/WKB.js';
@@ -25,13 +25,18 @@ var promiseSqlWasmLoaded;
 export { initSqlJsWasm, loadGpkg, sql_js_version };
 
 /**
- * Initialisation: start asynchronous loading of WASM file required by sql.js
+ * Initialisation: start asynchronous loading of WASM file required by sql.js.
+ * Note that unless you require access to sql.js outside ol-load-geopackage,
+ * then the returned promise can be ignored; loadGpkg() will wait if necessary
+ * and handle any errors loading the WASM file.
  * @param {string} sqlJsWasmDir - URL of folder containing sql-wasm.wasm file to load for sql.js
+ * @returns {Promise} Promise which delivers:
+ *   {WebAssembly} sql.js SQLITE database access library
  */
 function initSqlJsWasm(sqlJsWasmDir) {
     // If the WASM file location isn't specified look for it in the root folder
     if (sqlJsWasmDir === undefined) {
-        sqlJsWasmDir = "";
+        sqlJsWasmDir = '';
     }
 
     // For reading OGC GeoPackage files, use the sql.js SQLite reader;
@@ -46,6 +51,8 @@ function initSqlJsWasm(sqlJsWasmDir) {
                 `${sqlJsWasmDir}/\n` +
                 `[sql.js error message]: ${error}`);
         });
+
+    return promiseSqlWasmLoaded;
 }
 
 /**
@@ -58,15 +65,21 @@ function initSqlJsWasm(sqlJsWasmDir) {
  */
 function loadGpkg(gpkgFile, displayProjection) {
 
-    // Start OGC GeoPackage load and processing to extract data/SLDs
-    var gpkgReadPromise = readRawGpkg(gpkgFile);
+    // Check SQL WASM loading was initiated
+    if (promiseSqlWasmLoaded === undefined) {
+        throw new Error('SQL WASM loading has not started; ' +
+            'did you forget to run initSqlJsWasm() first?');
+    }
 
     // Check if we have a definition for the display projection (SRS)
     if (!ol_proj_get(displayProjection)) {
-        throw new Error("Missing requested display projection [" +
+        throw new Error('Missing requested display projection [' +
             displayProjection +
             '] - can be added beforehand with ol/proj/proj4');
     }
+
+    // Start OGC GeoPackage load and processing to extract data/SLDs
+    var gpkgReadPromise = readRawGpkg(gpkgFile);
 
     return Promise.allSettled([promiseSqlWasmLoaded, gpkgReadPromise])
         .then((results) => {
@@ -93,7 +106,7 @@ function loadGpkg(gpkgFile, displayProjection) {
 function readRawGpkg(gpkgFile) {
     return new Promise(function(succeed, fail) {
         var oReq = new XMLHttpRequest();
-        oReq.responseType = "arraybuffer";
+        oReq.responseType = 'arraybuffer';
         oReq.onreadystatechange = function() {
 
             // When request finished and response is ready
@@ -108,7 +121,7 @@ function readRawGpkg(gpkgFile) {
                 }
             }
         };
-        oReq.open("GET", gpkgFile);
+        oReq.open('GET', gpkgFile);
         oReq.send();
     });
 }
@@ -158,9 +171,9 @@ function processGpkgData(loadedGpkgFile, gpkgArrayBuffer, sqlWasm,
         while (stmt.step()) {
             let row = stmt.get();
             featureTableNames.push({
-                "table_name": row[0],
-                "srs_id": row[1].toString(),
-                "geometry_column_name": row[2]
+                'table_name': row[0],
+                'srs_id': row[1].toString(),
+                'geometry_column_name': row[2]
             });
         }
     }
@@ -177,7 +190,7 @@ function processGpkgData(loadedGpkgFile, gpkgArrayBuffer, sqlWasm,
         WHERE gpkg_contents.table_name='layer_styles'
     `);
     if (stmt.step()) {
-        stmt = db.prepare("SELECT f_table_name,styleSLD FROM layer_styles");
+        stmt = db.prepare('SELECT f_table_name,styleSLD FROM layer_styles');
         while (stmt.step()) {
             let row = stmt.get();
             sldsFromGpkg[row[0]] = row[1];
@@ -194,7 +207,7 @@ function processGpkgData(loadedGpkgFile, gpkgArrayBuffer, sqlWasm,
 
         // Check if we have a definition for the data projection (SRS)
         if (!ol_proj_get(tableDataProjection)) {
-            throw new Error("Missing data projection [" +
+            throw new Error('Missing data projection [' +
                 tableDataProjection + '] for table "' + table_name +
                 '" - can be added beforehand with ol/proj/proj4');
         }
@@ -226,7 +239,7 @@ function processGpkgData(loadedGpkgFile, gpkgArrayBuffer, sqlWasm,
         }
 
         // For information only, save details of original projection (SRS)
-        vectorSource.setProperties({"origProjection": tableDataProjection});
+        vectorSource.setProperties({'origProjection': tableDataProjection});
         dataFromGpkg[table_name] = vectorSource;
     }
 /*
@@ -263,7 +276,7 @@ function parseGpkgGeom(gpkgBinGeom) {
             envelopeSize = 64;
             break;
         default:
-            throw new Error("Invalid geometry envelope size flag in GeoPackage");
+            throw new Error('Invalid geometry envelope size flag in GeoPackage');
     }
 /*
     // Extract SRS (EPSG code)
@@ -281,11 +294,11 @@ function parseGpkgGeom(gpkgBinGeom) {
     // DEBUG: display other properties of the feature
     console.log('gpkgBinGeom Header: ' + (littleEndian ? 'Little' : 'Big')
         + ' Endian');
-    console.log("gpkgBinGeom Magic: 0x${gpkgBinGeom[0].toString(16)}${gpkgBinGeom[1].toString(16)}");
-    console.log("gpkgBinGeom Version:", gpkgBinGeom[2]);
-    console.log("gpkgBinGeom Flags:", flags);
-    console.log("gpkgBinGeom srs_id:", srsId);
-    console.log("gpkgBinGeom envelope size (bytes):", envelopeSize);
+    console.log('gpkgBinGeom Magic: 0x${gpkgBinGeom[0].toString(16)}${gpkgBinGeom[1].toString(16)}');
+    console.log('gpkgBinGeom Version:', gpkgBinGeom[2]);
+    console.log('gpkgBinGeom Flags:', flags);
+    console.log('gpkgBinGeom srs_id:', srsId);
+    console.log('gpkgBinGeom envelope size (bytes):', envelopeSize);
 */
     // Extract WKB which starts after variable-size "envelope" field
     var wkbOffset = envelopeSize + 8;

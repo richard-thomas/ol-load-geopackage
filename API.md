@@ -14,7 +14,10 @@ Parameters:
 
 - string `sqlJsWasmDir` (optional): URL or path relative to root of folder containing sql-wasm.wasm file. Default value is root folder.
 
-(No return value)
+Returns a Promise which delivers:
+- WebAssembly: sql.js SQLITE database access library
+
+Note that unless you require access to sql.js outside ol-load-geopackage, then the returned promise can be ignored; [loadGpkg()](#loadgpkggpkgfile-displayprojection) will wait if necessary and handle any errors loading the WASM file. The only other reason to monitor the returned promise is if you are unlikely to invoke loadGpkg() for a long time and want to ensure the WASM has been successfully loaded.
 
 If you want to load the associated WebAssembly binary (sql-wasm.wasm) from an external Content Delivery Network (CDN) then it is important that you load the WASM file that matches the version of the sql.js module being imported by ol-load-geopackage. Thus you will need to incorporate the _sql_js_version_ constant in the calling parameter, for example (from the proj4_example):
 
