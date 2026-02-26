@@ -30,8 +30,8 @@ export { initSqlJsWasm, loadGpkg, sql_js_version };
  * then the returned promise can be ignored; loadGpkg() will wait if necessary
  * and handle any errors loading the WASM file.
  * @param {string} sqlJsWasmDir - URL of folder containing sql-wasm.wasm file to load for sql.js
- * @returns {Promise} Promise which delivers:
- *   {WebAssembly} sql.js SQLITE database access library
+ * @returns {Promise<WebAssembly>} Promise which delivers:
+ *   sql.js SQLITE database access library WebAssembly
  */
 function initSqlJsWasm(sqlJsWasmDir) {
     // If the WASM file location isn't specified look for it in the root folder
@@ -46,10 +46,12 @@ function initSqlJsWasm(sqlJsWasmDir) {
     });
     promiseSqlWasmLoaded
         .catch(error => {
-            // Only need report error here - any later calls to loadGpkg() will throw error
-            console.error(`initSqlJsWasm() unable to load SQLite JS binary (sql-wasm.wasm) from folder:\n` +
-                `${sqlJsWasmDir}/\n` +
-                `[sql.js error message]: ${error}`);
+            // Only reporting error to console here to simplify error handling;
+            // Error will be dealt with on later call(s) to loadGpkg()
+            console.error('initSqlJsWasm() unable to load SQLite JS binary ' +
+                `(sql-wasm.wasm) from URL folder:\n` +
+                `  ${sqlJsWasmDir}/\n` +
+                error);
         });
 
     return promiseSqlWasmLoaded;
@@ -57,11 +59,13 @@ function initSqlJsWasm(sqlJsWasmDir) {
 
 /**
  * Wrapper to load a single OGC GeoPackage
- * @param {string} gpkgFile - OGC GeoPackage file path
+ * @param {(string|File|Blob|URL)} gpkgFile - OGC GeoPackage URL string or File/URL object
  * @param {string} displayProjection - map display projection (e.g. EPSG:3857)
- * @returns {Promise} Promise which delivers array of 2 objects:
+ * @returns {Promise<[Object, Object]>} Promise delivering array of 2 objects:
  *   data tables (OpenLayers vector sources, indexed by table name),
  *   styles (SLD layer_styles XML strings, indexed by layer name)
+ * @throws {Error} If SQL WASM loading not previously started
+ * @throws {Error} If ol/proj is missing the requested display projection
  */
 function loadGpkg(gpkgFile, displayProjection) {
 
@@ -84,14 +88,20 @@ function loadGpkg(gpkgFile, displayProjection) {
     return Promise.allSettled([promiseSqlWasmLoaded, gpkgReadPromise])
         .then((results) => {
             if (results[0].status === 'rejected') {
-                throw new Error('Unable to load SQLite JS binary (sql-wasm.wasm)');
+                // Throw (initSqlJs() failure) will convert to rejected promise
+                throw new Error(
+                    'Unable to load SQLite JS binary (sql-wasm.wasm).\n' +
+                    results[0].reason);
             }
             if (results[1].status === 'rejected') {
-                throw new Error(`Unable to read raw GeoPackage data from file: ${gpkgFile}`);
+                // Propagate exact Error object from readRawGpkg().
+                // Throw will convert to rejected promise
+                throw results[1].reason;
             }
             const sqlWasm = results[0].value;
-            const gpkgArrayBuffer = results[1].value;
-            return processGpkgData(gpkgFile, gpkgArrayBuffer, sqlWasm, displayProjection);
+            const gpkgByteArray = results[1].value;
+            const gpkgFileName = (gpkgFile instanceof File) ? gpkgFile.name : gpkgFile.toString();
+            return processGpkgData(gpkgFileName, gpkgByteArray, sqlWasm, displayProjection);
         }
     );
 }
@@ -100,44 +110,60 @@ function loadGpkg(gpkgFile, displayProjection) {
 
 /**
  * Read raw data from source for a single OGC GeoPackage
- * @param {string} gpkgFile - OGC GeoPackage file path
- * @returns {Promise} Promise with Gpkg contents in ArrayBuffer format
+ * @param {(string|File|Blob|URL)} input - OGC GeoPackage URL string or File/URL object
+ * @returns {Promise<Uint8Array>} Promise with Gpkg contents in byte array format
  */
-function readRawGpkg(gpkgFile) {
-    return new Promise(function(succeed, fail) {
-        var oReq = new XMLHttpRequest();
-        oReq.responseType = 'arraybuffer';
-        oReq.onreadystatechange = function() {
+async function readRawGpkg(input) {
 
-            // When request finished and response is ready
-            if (this.readyState == 4) {
-                var gpkgArrayBuffer = this.response;
-                if (this.status === 200 && gpkgArrayBuffer) {
-                    succeed(gpkgArrayBuffer);
-                } else {
-                    fail(new Error(
-                        'Requested GPKG file could not be loaded: ' +
-                        gpkgFile));
-                }
-            }
-        };
-        oReq.open('GET', gpkgFile);
-        oReq.send();
-    });
+    // Fetch() or File/Blob object (both have the equivalent methods we need)
+    let gpkgSource;
+
+    // File object is a specific type of Blob
+    if (input instanceof Blob) {
+        gpkgSource = input;
+    } else if (typeof input === 'string' || input instanceof URL) {
+        const response = await fetch(input);
+        if (!response.ok) {
+            // Throw will convert to rejected promise (as an async function)
+            throw new Error('GPKG file could not be loaded from URL:\n' +
+                `  ${input}\n` +
+                `Response: (${response.status}) ${response.statusText}`);
+        }
+        gpkgSource = response;
+    } else {
+        // Throw will convert to rejected promise (as an async function)
+        throw new TypeError('Input must be URL string or URL/File/Blob object');
+    }
+
+    try {
+        // Use .bytes() method if available (most browsers since Jan 2025)
+        if (typeof gpkgSource.bytes === 'function') {
+            return await gpkgSource.bytes();
+        }
+
+        // Fallback approach: Convert ArrayBuffer to Uint8Array
+        //console.log('readRawGpkg(): using fallback .arrayBuffer() + Uint8Array() methods');
+        const buffer = await gpkgSource.arrayBuffer();
+        return new Uint8Array(buffer);
+    } catch (error) {
+        // Throw will convert to rejected promise (as an async function)
+        throw new Error('Requested GPKG file could not be loaded.\n' + error);
+    }
 }
 
 /**
- * Process OGC GeoPackage (SQLite database) once loaded
- * @param {*} loadedGpkgFile - name of GeoPackage file (for diagnostics only)
- * @param {ArrayBuffer} gpkgArrayBuffer - ArrayBuffer containing Gpkg data read
+ * Process OGC GeoPackage (based on SQLite database) once loaded
+ * @param {string} loadedGpkgFile - name of GeoPackage file (for diagnostics only)
+ * @param {Uint8Array} gpkgByteArray - Byte Array containing Gpkg data read
  * @param {WebAssembly} sqlWasm - sql.js SQLITE database access library
  * @param {string} displayProjection - map display projection (e.g. EPSG:3857)
- * @returns {object[]} array of 2 objects: [<data tables>, <slds>]
- *   <data tables>: OpenLayers vector sources, indexed by table name
- *   <slds>: SLD XML strings, indexed by layer name
+ * @returns {[Object, Object]} Array of 2 objects:
+ *   data tables (OpenLayers vector sources, indexed by table name),
+ *   styles (SLD layer_styles XML strings, indexed by layer name) 
+ * @throws {Error} If unable to extract feature tables from OGC GeoPackage file
+ * @throws {Error} If ol/proj is missing required projection for a data table
  */
-function processGpkgData(loadedGpkgFile, gpkgArrayBuffer, sqlWasm,
-    displayProjection) {
+function processGpkgData(loadedGpkgFile, gpkgByteArray, sqlWasm, displayProjection) {
     var db;
 
     // Data and associated SLD styles loaded both from GPKG
@@ -146,9 +172,6 @@ function processGpkgData(loadedGpkgFile, gpkgArrayBuffer, sqlWasm,
 
     // DEBUG: measure GPKG processing time
     //var startProcessing = Date.now();
-
-    // Convert Array Buffer to Byte Array for SQLite
-    var gpkgByteArray = new Uint8Array(gpkgArrayBuffer);
 
     try {
         db = new sqlWasm.Database(gpkgByteArray);
@@ -179,8 +202,8 @@ function processGpkgData(loadedGpkgFile, gpkgArrayBuffer, sqlWasm,
     }
     catch (err) {
         throw new Error(
-            'Unable to extract feature tables from OGC GeoPackage file "' +
-            loadedGpkgFile + '":\n' + err);
+            'Unable to extract feature tables from OGC GeoPackage file.\n' +
+            err);
     }
 
     // Extract SLD styles for each layer (if styles included in the gpkg)
@@ -212,6 +235,7 @@ function processGpkgData(loadedGpkgFile, gpkgArrayBuffer, sqlWasm,
                 '" - can be added beforehand with ol/proj/proj4');
         }
 
+        //console.log(`Extracting table "${table_name}" (SRS: ${tableDataProjection})`);
         stmt = db.prepare("SELECT * FROM '" + table_name + "'");
         let vectorSource = new ol_source_Vector();
         let geometry_column_name = table.geometry_column_name;
@@ -254,8 +278,9 @@ function processGpkgData(loadedGpkgFile, gpkgArrayBuffer, sqlWasm,
 /**
  * Extract (SRS ID &) WKB from an OGC GeoPackage feature
  * (i.e. strip off the variable length header)
- * @param {object} gpkgBinGeom feature geometry property (includes header)
- * @returns feature geometry in WKB (Well Known Binary) format
+ * @param {Uint8Array} gpkgBinGeom - feature geometry property (includes header)
+ * @returns {Uint8Array} feature geometry in WKB (Well Known Binary) format
+ * @throws {Error} If invalid geometry envelope size flag in GeoPackage
  */
 function parseGpkgGeom(gpkgBinGeom) {
     var flags = gpkgBinGeom[3];

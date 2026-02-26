@@ -121,7 +121,7 @@ npm run-script dev
 The JavaScript module has 3 exported functions/constants which are described in the separate [API Specification](API.md):
 
 - [initSqlJsWasm()](API.md#initsqljswasmsqljswasmdir) - Initialisation: start loading of required sql.js WASM file
-- [loadGpkg()](API.md#loadgpkggpkgfile-displayprojection) - start loading and data extraction of GeoPackage
+- [loadGpkg()](API.md#loadgpkggpkgfile-displayprojection) - start asynchronous loading and data extraction of GeoPackage
 - [sql_js_version](API.md#sql_js_version) - NPM version number of  underlying sql.js module
 
 ## Migrating from ol-load-geopackage v1.x.x

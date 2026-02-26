@@ -1,6 +1,6 @@
 {
   "name": "ol-load-geopackage",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Loads OGC GeoPackage vector data tables into OpenLayers Vector Sources",
   "files": [
     "dist/",
