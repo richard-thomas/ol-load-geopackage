@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/ol-load-geopackage)](https://www.npmjs.com/package/ol-load-geopackage)
 
-A JavaScript module to load OGC GeoPackage vector data tables into OpenLayers Vector Sources, transforming the data (if necessary) to match the specified display projection. This was primarily designed to directly load data exported by the QGIS [Package Layers](https://docs.qgis.org/3.16/en/docs/user_manual/processing_algs/qgis/database.html#package-layers) Processing Toolbox operation. As such, it will also (if it exists) load the associated "layer_styles" table of SLD XML styling data exported by QGIS in the same GeoPackage. It is implemented as an NPM module and is a lightweight wrapper around the [sql.js](https://github.com/sql-js/sql.js) SQLite JavaScript library.
+A JavaScript module to load OGC GeoPackage vector data tables into [OpenLayers Vector Sources](https://openlayers.org/en/latest/apidoc/module-ol_source_Vector-VectorSource.html), transforming the data (if necessary) to match the specified display projection. Additionally, to help directly load data exported by the QGIS [Package Layers](https://docs.qgis.org/3.16/en/docs/user_manual/processing_algs/qgis/database.html#package-layers) Processing Toolbox operation it will also (if it exists) load the associated "layer_styles" table of SLD XML styling data exported by QGIS in the same GeoPackage. It is implemented as an NPM module and is a lightweight wrapper around the [sql.js](https://github.com/sql-js/sql.js) SQLite JavaScript library.
 
 The current version was tested with OpenLayers 10.7, but should work with OpenLayers 6+.
 
@@ -69,6 +69,8 @@ gpkgPromise
 
 Note that the _initSqlJsWasm()_ statement will start the asynchronous loading of the required sql.js WebAssembly binary file sql-wasm.wasm (from the current folder in this case), so is best placed early in the code.
 
+For more advanced usage, an additional `options` parameter can be passed to loadGpkg() to control handling of problems encountered with GeoPackages, with information on the issues available as a 3rd return value (`gpkgTableStatus`). See the separate [API Specification](API.md) for details.
+
 ### Building with Webpack
 
 The (shared) support files used to build the examples using [Webpack 5](https://webpack.js.org/) ([package.json](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples/package.json), [webpack.config.js](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples/webpack.config.js)) are in the _examples_ folder. If you clone the repository then you can (re-)build the code bundles (for both examples) with the commands:
@@ -120,7 +122,7 @@ npm run-script dev
 
 The JavaScript module has 3 exported functions/constants which are described in the separate [API Specification](API.md):
 
-- [initSqlJsWasm()](API.md#initsqljswasmsqljswasmdir) - Initialisation: start loading of required sql.js WASM file
+- [initSqlJsWasm()](API.md#initsqljswasmsqljswasmdir) - Initialisation: start asynchronous loading of required sql.js WASM file
 - [loadGpkg()](API.md#loadgpkggpkgfile-displayprojection) - start asynchronous loading and data extraction of GeoPackage
 - [sql_js_version](API.md#sql_js_version) - NPM version number of  underlying sql.js module
 
