@@ -24,7 +24,7 @@
   "license": "ISC",
   "dependencies": {
     "ol": ">=6.7.0",
-    "sql.js": "^1.6.1"
+    "sql.js": "1.13.0"
   },
   "repository": {
     "type": "git",
