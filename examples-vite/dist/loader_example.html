@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>ol-load-geopackage File Loader + Options example</title>
+        <style>
+            #map {
+                width: 100%;
+                height: 500px;
+                border: solid 1px grey;
+            }
+            .loader-button {
+                padding: 0 20px 5px 10px;
+            }
+            #url-text {
+                width: 100%;
+            }
+            .option-selector {
+                background-color: antiquewhite;
+                border: solid 1px black;
+                margin: 10px;
+                padding: 5px;
+            }
+            .option-selector p {
+                margin: 10px 0 0 0;
+                font-size: small;
+            }
+        </style>
+      <script type="module" crossorigin src="./assets/loader-BiOe7g0R.js"></script>
+      <link rel="modulepreload" crossorigin href="./assets/ol-load-geopackage-C5TSnj-v.js">
+      <link rel="modulepreload" crossorigin href="./assets/proj4-DMcx3CSJ.js">
+      <link rel="stylesheet" crossorigin href="./assets/ol-load-geopackage-c_1sG1-7.css">
+    </head>
+    <body>
+        <h4>ol-load-geopackage: Generic File Loader + Options example</h4>
+        <div id="map">
+        </div>
+        <div class="option-selector">
+            Select loadGpkg() option "missingDataSrsAction":
+            <select id="missing-data-srs-action-sel">
+                <option value="stop">stop</option>
+                <option value="discard">discard</option>
+                <option value="noProject" selected>noProject</option> 
+            </select>
+            <p id="missing-data-srs-action-descr"></p>
+        </div>
+        <div class="option-selector">
+            Select loadGpkg() option "failedTableLoadAction":
+            <select id="failed-table-load-action-sel">
+                <option value="stop">stop</option>
+                <option value="discard" selected>discard</option> 
+            </select>
+            <p id="failed-table-load-action-descr"></p>
+        </div>
+        <div class="loader-button">
+            <button id="gpkg-load-btn">Load local GeoPackage file</button>
+            <input type="file" id="fileInput" style="display: none;">
+        </div>
+        <div class="loader-button">
+            <button id="url-load-btn">Load GeoPackage from URL:</button>
+            <input type="text" id="url-text"
+                value=""
+                placeholder="(Enter URL of .gpkg file)">
+        </div>
+        <p>Example GeoPackage URLs to try:</p>
+        <ul>
+            <li><b>https://richard-thomas.github.io/ol-load-geopackage/examples/dist/Natural_Earth_QGIS_layers_and_styles.gpkg</b><br>
+                - <em>[EPSG 4326] countries/lakes/rivers from naturalearthdata.com.</em></li>
+            <li><b>http://www.geopackage.org/data/sample1_2.gpkg</b><br>
+                - <em>[EPSG:4269] Counties of the US</em></li>
+            <li><b>https://www.geopackage.org/data/gdal_sample.gpkg</b><br>
+                - <em>[EPSG:0,4326,32631]
+                    <a href="https://www.geopackage.org/guide/implementation_guide.html" target="_blank">Test data</a>:
+                    includes tables where SRS ID is missing from ol/proj. Setting option
+                    <span style="color: #00a000">missingDataSrsAction=noProject</span>   
+                    will keep these tables but display them (incorrectly) near 0,0 ("Null Island")
+                    </em></li>
+            <li><b>http://www.geopackage.org/data/gdal_sample_v1.2_spi_nonlinear_webp_elevation.gpkg</b><br>
+                - <em>[EPSG:0,4326,32631]
+                    <a href="https://www.geopackage.org/guide/implementation_guide.html" target="_blank">Test data</a>:
+                    includes WKB geometry types > 7 (not supported by OpenLayers).
+                    With these unsupported geometries, setting option
+                    <span style="color: #00a000">failedTableLoadAction=discard</span>  
+                    allows loadGpkg() to keep processing other tables in the GeoPackage. 
+                    </em></li>
+            <li><b>https://richard-thomas.github.io/DS_Canal/dist/OS Open Data (clipped) & styles.gpkg</b><br>
+                - <em>[EPSG:3857] OS open data in SW England (QGIS-exported "Package Layers" data including layer_styles SLD table)</em></li>
+        </ul>
+        <div id="report"></div>
+    </body>
+</html>

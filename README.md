@@ -18,6 +18,12 @@ Each example (in the [GitHub repository](https://github.com/richard-thomas/ol-lo
 [JavaScript (common)](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples/src/proj4_example.js))
   - Used in conjunction with Proj4js module to enable additional projections to those built in to OpenLayers. These other projections can be for the input source data and/or the output display projection. Also demonstrates loading required sql.js WebAssembly binary (WASM) from an external Content Delivery Network (CDN) site.
 
+- Generic File Loader + Options Example: [web page (Vite)](https://richard-thomas.github.io/ol-load-geopackage/examples-vite/dist/loader_example.html) (sources: [Vite HTML](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/loader_example.html),
+[JavaScript](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/src/loader_example.js))
+  - Loading of user-selected GeoPackages either from local
+  files or from specified web URLs. Demonstration of use of
+  loadGpkg() options to handle problematic Geopackages.
+
 Note: identical JavaScript code is used in the Webpack/Vite versions, with the HTML code only being very subtly different.
 
 You can try the examples with your own GeoPackage data files (without having to install Node.js or WebPack) by cloning the GitHub repository then editing the "gpkgFile" definition in the HTML files. In order to ensure all the files are able to load you will have to host them with a (simple) local HTTP server, for example by running in the examples/dist or examples-vite/dist folder...
@@ -69,7 +75,29 @@ gpkgPromise
 
 Note that the _initSqlJsWasm()_ statement will start the asynchronous loading of the required sql.js WebAssembly binary file sql-wasm.wasm (from the current folder in this case), so is best placed early in the code.
 
-For more advanced usage, an additional `options` parameter can be passed to loadGpkg() to control handling of problems encountered with GeoPackages, with information on the issues available as a 3rd return value (`gpkgTableStatus`). See the separate [API Specification](API.md) for details.
+For more advanced usage, an additional `options` parameter can be passed to loadGpkg() to control handling of problems encountered with GeoPackages, with information on the issues available as a 3rd return value (`gpkgTableStatus`). See the separate [API Specification](API.md) for details and the ["Generic File Loader" example webpage](https://richard-thomas.github.io/ol-load-geopackage/examples-vite/dist/loader_example.html) to try these options out.
+
+### Building with Vite
+
+The (shared) support files used to build the examples using [Vite](https://vite.dev/) ([package.json](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/package.json), [vite.config.js](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/vite.config.js)) are in the _examples-vite_ folder. If you clone the repository then you can (re-)build the code bundles (for all examples) with the commands:
+
+```bash
+cd examples-vite
+npm install
+npm run-script sql-install
+npm run-script build
+```
+Although you can then test the output code placed in the dist folder using the python HTTP server method (as in the following Webpack examples section), it is easier to use Vite's built in HTTP server with:
+
+```bash
+npm run-script preview
+```
+
+The Vite dev server can be used to automatically re-build, act as a webhost and trigger the browser to reload every time the code changes. The following script commands (defined in [package.json](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/package.json)) will start the dev server at a top level _index.html_ file which has links to the 3 examples:
+
+```bash
+npm run-script dev
+```
 
 ### Building with Webpack
 
@@ -96,34 +124,12 @@ npm run-script start-basic
 npm run-script start-proj4
 ```
 
-### Building with Vite
-
-The (shared) support files used to build the examples using [Vite](https://vite.dev/) ([package.json](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/package.json), [vite.config.js](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/vite.config.js)) are in the _examples-vite_ folder. If you clone the repository then you can (re-)build the code bundles (for both examples) with the commands:
-
-```bash
-cd examples-vite
-npm install
-npm run-script sql-install
-npm run-script build
-```
-Although you can then test the output code placed in the dist folder using the python HTTP server method (as in the Webpack example), it is easier to use Vite's built in HTTP server with:
-
-```bash
-npm run-script preview
-```
-
-The Vite dev server can be used to automatically re-build, act as a webhost and trigger the browser to reload every time the code changes. The following script commands (defined in [package.json](https://github.com/richard-thomas/ol-load-geopackage/tree/master/examples-vite/package.json)) will start the dev server at a top level _index.html_ file which has links to the 2 examples:
-
-```bash
-npm run-script dev
-```
-
 ## API
 
 The JavaScript module has 3 exported functions/constants which are described in the separate [API Specification](API.md):
 
 - [initSqlJsWasm()](API.md#initsqljswasmsqljswasmdir) - Initialisation: start asynchronous loading of required sql.js WASM file
-- [loadGpkg()](API.md#loadgpkggpkgfile-displayprojection) - start asynchronous loading and data extraction of GeoPackage
+- [loadGpkg()](API.md#loadgpkggpkgfile-displayprojection-options) - start asynchronous loading and data extraction of GeoPackage
 - [sql_js_version](API.md#sql_js_version) - NPM version number of  underlying sql.js module
 
 ## Migrating from ol-load-geopackage v1.x.x

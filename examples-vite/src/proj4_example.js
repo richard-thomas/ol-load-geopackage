@@ -11,7 +11,7 @@
 import 'ol/ol.css';
 
 // Module to import OGC GeoPackages
-import { initSqlJsWasm, loadGpkg , sql_js_version} from 'ol-load-geopackage';
+import { initSqlJsWasm, loadGpkg, sql_js_version} from 'ol-load-geopackage';
 
 // Start loading of sql.js Web Assembly (WASM) from CDN folder.
 // (CDN version specified needs to match sql.js module imported by ol-load-geopackage)
@@ -45,7 +45,7 @@ const outputElem = document.getElementById('report');
 outputElem.innerHTML +=
     '<p>Loading required sql.js binary (WASM) from external Content ' +
     'Delivery Network (CDN) folder (' + sqlJsWasmDir + ').</p>' +
-    '<p>Loading OGC GeoPackage file (' + gpkgFile +
+    '<p>Loading OGC GeoPackage file (URL: ' + gpkgFile +
     ') and reprojecting sources (to ' + displayProjection + ')...</p>';
 
 // Kick off the loading of the OGC GeoPackage
@@ -54,7 +54,8 @@ var gpkgPromise;
 try {
     gpkgPromise = loadGpkg(gpkgFile, displayProjection);
 } catch (error) {
-    alert('loadGpkg() failed before Promise set-up:\n' + error);
+    alert('loadGpkg() failed before Promise set-up for URL:\n' +
+        `  ${gpkgFile}\n${error}`);
 }
 
 // Create Map canvas and View
@@ -90,7 +91,8 @@ gpkgPromise
             }));
         }
     })
-    .catch(error => alert('ol-load-geopackage error: ' + error));
+    .catch(error => alert('ol-load-geopackage error for URL:\n' +
+        `  ${gpkgFile}\n${error}`));
 
 // Display (in browser console) details of all tables in GeoPackage
 function displayGpkgContents(dataFromGpkg, sldsFromGpkg) {

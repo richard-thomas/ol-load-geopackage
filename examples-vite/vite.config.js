@@ -12,6 +12,7 @@ export default defineConfig({
         // Multiple HTML files to process
         basic: resolve(__dirname, 'basic_example.html'),
         proj4: resolve(__dirname, 'proj4_example.html'),
+        loader: resolve(__dirname, 'loader_example.html'),
         main: resolve(__dirname, 'index.html')
       },
     },
